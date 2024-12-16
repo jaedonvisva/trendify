@@ -141,9 +141,8 @@ li {
     </style>
 </head>
 <body>
-    <h1>Trendify</h1>
+    <h1>Welcome, {{username}}</h1>
     <p>Vote on songs to add to your group playlists!</p>
-        <p>Welcome {{session.user}}</p>
     <form method="POST" action="/">
         <input type="text" name="query" placeholder="Enter song name" required>
         <button type="submit">Search</button>

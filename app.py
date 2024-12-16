@@ -19,11 +19,15 @@ SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 SPOTIFY_SEARCH_URL = "https://api.spotify.com/v1/search"
 
 mgclient = MongoClient(MONGO_URI)
+database = mgclient.get_database("trendify")
+songs = database.get_collection("songs")
+votes = database.get_collection("votes")
+playlists = database.get_collection("playlists")
+users = database.get_collection("users")
 
-# Step 1: Homepage with Login Button
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    # Initialize variables
     songs = []
     error = None
     query = None
@@ -31,6 +35,9 @@ def index():
     access_token = session.get('access_token')
     if not access_token:
         return redirect(url_for('login_page'))
+    
+    user = session.get("user")
+    username = user["name"]
 
     if request.method == 'POST':
         query = request.form.get('query')
@@ -38,8 +45,6 @@ def index():
         if not query:
             error = "Please enter a song name."
         else:
-            
-            # Call Spotify API for search
             headers = {
                 "Authorization": f"Bearer {access_token}"
             }
@@ -65,7 +70,7 @@ def index():
             else:
                 error = "Failed to fetch search results. Please try again."
     
-    return render_template('index.html', songs=songs, error=error, query=query)
+    return render_template('index.html', songs=songs, error=error, query=query, username = username)
 
 @app.route('/login_page')
 def login_page():
@@ -73,19 +78,17 @@ def login_page():
 
 @app.route('/login', methods=["GET", "POST"])
 def login():
-    scope = "playlist-read-private playlist-modify-public"  # Define your scopes
+    scope = "playlist-read-private playlist-modify-public user-read-email user-read-private user-library-read"
     auth_url = f"{SPOTIFY_AUTH_URL}?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&scope={scope}"
     return redirect(auth_url)
 
 
-# Step 3: Handle Redirect (Callback)
 @app.route('/callback')
 def callback():
     code = request.args.get('code')
     if not code:
         return "Error: Authorization failed."
     
-    # Step 4: Exchange code for access token
     auth_str = f"{CLIENT_ID}:{CLIENT_SECRET}"
     auth_b64 = base64.b64encode(auth_str.encode()).decode()
     
@@ -107,17 +110,33 @@ def callback():
     access_token = tokens.get('access_token')
     refresh_token = tokens.get('refresh_token')
     
+    # Use Bearer token to get user profile
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+    user_profile_response = requests.get("https://api.spotify.com/v1/me", headers=headers)
+    if user_profile_response.status_code != 200:
+        return f"Error fetching user profile: {user_profile_response.text}"
+    
+    user_profile = user_profile_response.json()
+
     session['access_token'] = access_token
     session['refresh_token'] = refresh_token
+    session['user'] = {
+        "id": user_profile.get('id'),
+        "name": user_profile.get('display_name'),
+        "email": user_profile.get('email')
+    }
     
     return redirect(url_for('index'))
 
+
 @app.route('/vote', methods=['POST'])
 def vote():
-    # Placeholder for voting logic
+    #add voting logic
     song_id = request.args.get('song_id')
     return f"Vote recorded for song ID: {song_id}"
-# Optional: Logout route
+
 @app.route('/logout')
 def logout():
     session.clear()
