@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Playlists</title>
+</head>
+<body>
+    <h1>Your Playlists</h1>
+    
+    <ul>
+        {% for playlist in playlists %}
+            <li>
+                <a href="{{ url_for('playlist_details', playlist_id=playlist['playlist_id']) }}">
+                    {{ playlist['name'] }}
+                </a>
+                {% if session['user']['id'] == playlist['owner_id'] %}
+                    <span>(Owner)</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="/">Back to Home</a>
+</body>
+</html>

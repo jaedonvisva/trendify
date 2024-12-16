@@ -4,13 +4,14 @@ import os
 import base64
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from models import *
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = 'key_to_be_added'
 
-MONGO_URI = os.getenv("MONGO_URI")
+# spotify API
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 REDIRECT_URI = "http://127.0.0.1:5000/callback"
@@ -18,14 +19,16 @@ SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 SPOTIFY_SEARCH_URL = "https://api.spotify.com/v1/search"
 
+# initalize mongodb
+MONGO_URI = os.getenv("MONGO_URI")
 mgclient = MongoClient(MONGO_URI)
 database = mgclient.get_database("trendify")
-songs = database.get_collection("songs")
-votes = database.get_collection("votes")
-playlists = database.get_collection("playlists")
-users = database.get_collection("users")
+song_collection = database.get_collection("songs")
+votes_collection = database.get_collection("votes")
+playlist_collection = database.get_collection("playlists")
+users_collection = database.get_collection("users")
 
-
+# index route
 @app.route('/', methods=['GET', 'POST'])
 def index():
     songs = []
@@ -38,6 +41,7 @@ def index():
     
     user = session.get("user")
     username = user["name"]
+    id = user['id']
 
     if request.method == 'POST':
         query = request.form.get('query')
@@ -70,12 +74,14 @@ def index():
             else:
                 error = "Failed to fetch search results. Please try again."
     
-    return render_template('index.html', songs=songs, error=error, query=query, username = username)
+    return render_template('index.html', songs=songs, error=error, query=query, username = username, id=id)
 
+# login page
 @app.route('/login_page')
 def login_page():
     return render_template('login.html')
 
+# login route
 @app.route('/login', methods=["GET", "POST"])
 def login():
     scope = "playlist-read-private playlist-modify-public user-read-email user-read-private user-library-read"
@@ -131,16 +137,48 @@ def callback():
     return redirect(url_for('index'))
 
 
-@app.route('/vote', methods=['POST'])
-def vote():
-    #add voting logic
+@app.route('/add', methods=['POST'])
+def add():
     song_id = request.args.get('song_id')
-    return f"Vote recorded for song ID: {song_id}"
+    user_id = session['user']['id']
+    return f"Added {song_id} by {user_id} to {None}"
 
 @app.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('login_page'))
+
+@app.route('/playlist/<playlist_id>')
+def playlist_details(playlist_id):
+    user_id = session['user']['id']
+    if not user_id:
+        return redirect('/login')
+
+    # Fetch the playlist by ID
+    playlist = playlist_collection.find_one({"playlist_id": playlist_id})
+
+    # Check if the user has access to the playlist
+    if not playlist or (user_id not in playlist['members'] and user_id != playlist['created_by']):
+        return "You do not have access to this playlist", 403
+
+    playlist_songs = list(song_collection.find({"spotify_id": {"$in": playlist['songs']}}))
+
+    return render_template('playlist_details.html', playlist=playlist, songs=playlist_songs)
+
+@app.route('/playlists')
+def playlists():
+    user_id = session['user']['id']
+    if not user_id:
+        return redirect('/login')
+
+    user_playlists = list(playlist_collection.find({
+        "$or": [
+            {"created_by": user_id},
+            {'members': user_id}
+        ]
+    }))
+
+    return render_template('playlists.html', playlists=user_playlists)
 
 if __name__ == '__main__':
     app.run(debug=True)

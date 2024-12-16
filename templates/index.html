@@ -158,8 +158,8 @@ li {
                     <img src="{{ song.cover }}" alt="Album cover for {{ song.name }}">
                     <strong>{{ song.name }}</strong> by {{ song.artist }} <br>
                     <a href="{{ song.url }}" target="_blank">Listen on Spotify</a> <br>
-                    <form action="{{ url_for('vote', song_id=song.id) }}" method="POST">
-                        <button type="submit">Vote</button>
+                    <form action="{{ url_for('add', song_id=song.id) }}" method="POST">
+                        <button type="submit">Add to playlist</button>
                     </form>
                 </li>
             {% endfor %}

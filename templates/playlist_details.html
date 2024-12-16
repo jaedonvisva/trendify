@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ playlist['name'] }}</title>
+</head>
+<body>
+    <h1>{{ playlist['name'] }}</h1>
+    <p>Owned by: {{ playlist['owner_id'] }}</p>
+    
+    <h2>Songs</h2>
+    <ul>
+        {% for song in songs %}
+            <li>
+                <img src="{{ song['cover'] }}" alt="{{ song['name'] }} Cover" width="50" height="50">
+                <a href="{{ song['url'] }}" target="_blank">{{ song['name'] }}</a> by {{ song['artist'] }}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <a href="/playlists">Back to Playlists</a>
+</body>
+</html>
