@@ -5,6 +5,8 @@ import base64
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
+load_dotenv()
+
 app = Flask(__name__)
 app.secret_key = 'key_to_be_added'
 
@@ -18,8 +20,6 @@ SPOTIFY_SEARCH_URL = "https://api.spotify.com/v1/search"
 
 mgclient = MongoClient(MONGO_URI)
 
-
-
 # Step 1: Homepage with Login Button
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -28,16 +28,16 @@ def index():
     error = None
     query = None
 
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect(url_for('login_page'))
+
     if request.method == 'POST':
         query = request.form.get('query')
         
         if not query:
             error = "Please enter a song name."
         else:
-            # Get access token from the session
-            access_token = session.get('access_token')
-            if not access_token:
-                return redirect(url_for('login'))  # Redirect to login if not authenticated
             
             # Call Spotify API for search
             headers = {
@@ -67,13 +67,16 @@ def index():
     
     return render_template('index.html', songs=songs, error=error, query=query)
 
+@app.route('/login_page')
+def login_page():
+    return render_template('login.html')
 
-# Step 2: Redirect to Spotify Login
-@app.route('/login')
+@app.route('/login', methods=["GET", "POST"])
 def login():
     scope = "playlist-read-private playlist-modify-public"  # Define your scopes
     auth_url = f"{SPOTIFY_AUTH_URL}?response_type=code&client_id={CLIENT_ID}&redirect_uri={REDIRECT_URI}&scope={scope}"
     return redirect(auth_url)
+
 
 # Step 3: Handle Redirect (Callback)
 @app.route('/callback')
@@ -107,7 +110,8 @@ def callback():
     session['access_token'] = access_token
     session['refresh_token'] = refresh_token
     
-    return "Authentication successful! You can now make Spotify API requests."
+    return redirect(url_for('index'))
+
 @app.route('/vote', methods=['POST'])
 def vote():
     # Placeholder for voting logic
@@ -117,7 +121,7 @@ def vote():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('login_page'))
 
 if __name__ == '__main__':
     app.run(debug=True)
