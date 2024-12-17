@@ -154,15 +154,23 @@ li {
         <h2>Search Results for "{{ query }}":</h2>
         <ul>
             {% for song in songs %}
-                <li>
-                    <img src="{{ song.cover }}" alt="Album cover for {{ song.name }}">
-                    <strong>{{ song.name }}</strong> by {{ song.artist }} <br>
-                    <a href="{{ song.url }}" target="_blank">Listen on Spotify</a> <br>
-                    <form action="{{ url_for('add', song_id=song.id) }}" method="POST">
-                        <button type="submit">Add to playlist</button>
-                    </form>
-                </li>
-            {% endfor %}
+    <li>
+        <img src="{{ song.cover }}" alt="Album cover for {{ song.name }}">
+        <strong>{{ song.name }}</strong> by {{ song.artist }} <br>
+        <a href="{{ song.url }}" target="_blank">Listen on Spotify</a> <br>
+        <form action="{{ url_for('add') }}" method="POST">
+            <input type="hidden" name="song_id" value="{{ song.id }}">
+            <select name="playlist_id" required>
+                <option value="" disabled selected>Select Playlist</option>
+                {% for playlist in playlists %}
+                    <option value="{{ playlist.playlist_id }}">{{ playlist.name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit">Add to Playlist</button>
+        </form>
+    </li>
+{% endfor %}
+
         </ul>
     {% endif %}
 </body>

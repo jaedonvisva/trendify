@@ -71,10 +71,22 @@ def index():
                         'cover': track['album']['images'][0]['url'] if track['album']['images'] else None,
                         'url': track['external_urls']['spotify']
                     })
+                playlists = list(playlist_collection.find({
+        "$or": [
+            {"created_by": id},
+            {'members': id}
+        ]
+    }))
+                return render_template("index.html", username=username, songs=songs, playlists=playlists, query=query)
             else:
                 error = "Failed to fetch search results. Please try again."
-    
-    return render_template('index.html', songs=songs, error=error, query=query, username = username, id=id)
+    playlists = list(playlist_collection.find({
+        "$or": [
+            {"created_by": id},
+            {'members': id}
+        ]
+    }))
+    return render_template('index.html', songs=songs, error=error, query=query, username = username, id=id, playlists=playlists)
 
 # login page
 @app.route('/login_page')
@@ -116,7 +128,6 @@ def callback():
     access_token = tokens.get('access_token')
     refresh_token = tokens.get('refresh_token')
     
-    # Use Bearer token to get user profile
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
@@ -126,22 +137,65 @@ def callback():
     
     user_profile = user_profile_response.json()
 
+
     session['access_token'] = access_token
     session['refresh_token'] = refresh_token
     session['user'] = {
         "id": user_profile.get('id'),
         "name": user_profile.get('display_name'),
-        "email": user_profile.get('email')
+        "email": user_profile.get('email'),
+        "url": user_profile.get('external_urls').get('spotify')
     }
+
+    if not users_collection.find_one({"spotify_id":user_profile.get("id")}):
+        print("added")
+        users_collection.insert_one(User(session['user']['id'], session['user']['url']).to_dict())
     
     return redirect(url_for('index'))
 
 
 @app.route('/add', methods=['POST'])
 def add():
-    song_id = request.args.get('song_id')
+    access_token = session.get('access_token')
+    if not access_token:
+        return redirect(url_for('login_page'))
+    
+    song_id = request.form['song_id']
+    playlist_id = request.form['playlist_id']
     user_id = session['user']['id']
-    return f"Added {song_id} by {user_id} to {None}"
+
+    # Fetch song details from Spotify API
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
+    song_response = requests.get(f"https://api.spotify.com/v1/tracks/{song_id}", headers=headers)
+    
+    if song_response.status_code != 200:
+        return f"Failed to fetch song details: {song_response.text}", 400
+
+    song_data = song_response.json()
+
+    song_document = {
+        "track_id": song_data['id'],
+        "name": song_data['name'],
+        "artist": ', '.join(artist['name'] for artist in song_data['artists']),
+        "album_cover": song_data['album']['images'][0]['url'] if song_data['album']['images'] else None,
+        "spotify_url": song_data['external_urls']['spotify'],
+        "added_by": user_id,
+        "playlist_id": playlist_id,
+        "votes": []
+    }
+
+    if not song_collection.find_one({"playlist_id": song_document['playlist_id']}):
+        song_collection.insert_one(song_document)
+        playlist_collection.update_one(
+            {"_id": playlist_id},
+            {"$addToSet": {"songs": song_data['id']}} 
+        )
+        return f"Added '{song_data['name']}' to playlist {playlist_id} by user {user_id}"
+    else:
+        return  f"Already added to the playlist {song_document['playlist_id']}"
+
 
 @app.route('/logout')
 def logout():
@@ -154,10 +208,8 @@ def playlist_details(playlist_id):
     if not user_id:
         return redirect('/login')
 
-    # Fetch the playlist by ID
     playlist = playlist_collection.find_one({"playlist_id": playlist_id})
 
-    # Check if the user has access to the playlist
     if not playlist or (user_id not in playlist['members'] and user_id != playlist['created_by']):
         return "You do not have access to this playlist", 403
 
