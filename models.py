@@ -22,14 +22,16 @@ class Song:
         }
 
 class User:
-    def __init__(self, spotify_id, profile_url):
+    def __init__(self, spotify_id, profile_url, name):
         self.spotify_id = spotify_id
         self.profile_url = profile_url
+        self.name = name
 
     def to_dict(self):
         return {
             "spotify_id": self.spotify_id,
-            "profile_url": self.profile_url
+            "profile_url": self.profile_url,
+            "name":self.name
         }
 
 class Playlist:

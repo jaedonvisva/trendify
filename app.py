@@ -5,6 +5,7 @@ import base64
 from dotenv import load_dotenv
 from pymongo import MongoClient
 from models import *
+import uuid
 
 load_dotenv()
 
@@ -149,7 +150,7 @@ def callback():
 
     if not users_collection.find_one({"spotify_id":user_profile.get("id")}):
         print("added")
-        users_collection.insert_one(User(session['user']['id'], session['user']['url']).to_dict())
+        users_collection.insert_one(User(session['user']['id'], session['user']['url'], session['user']['name']).to_dict())
     
     return redirect(url_for('index'))
 
@@ -164,7 +165,6 @@ def add():
     playlist_id = request.form['playlist_id']
     user_id = session['user']['id']
 
-    # Fetch song details from Spotify API
     headers = {
         "Authorization": f"Bearer {access_token}"
     }
@@ -186,15 +186,11 @@ def add():
         "votes": []
     }
 
-    if not song_collection.find_one({"playlist_id": song_document['playlist_id']}):
+    if not song_collection.find_one({"playlist_id": song_document['playlist_id'], "track_id": song_document['track_id']}):
         song_collection.insert_one(song_document)
-        playlist_collection.update_one(
-            {"_id": playlist_id},
-            {"$addToSet": {"songs": song_data['id']}} 
-        )
         return f"Added '{song_data['name']}' to playlist {playlist_id} by user {user_id}"
     else:
-        return  f"Already added to the playlist {song_document['playlist_id']}"
+        return  f"Already added {song_data['name']} to the playlist {song_document['playlist_id']}"
 
 
 @app.route('/logout')
@@ -213,9 +209,10 @@ def playlist_details(playlist_id):
     if not playlist or (user_id not in playlist['members'] and user_id != playlist['created_by']):
         return "You do not have access to this playlist", 403
 
-    playlist_songs = list(song_collection.find({"spotify_id": {"$in": playlist['songs']}}))
+    playlist_songs = list(song_collection.find({"playlist_id": playlist_id}))
+    username = users_collection.find_one({"spotify_id": user_id})["name"]
 
-    return render_template('playlist_details.html', playlist=playlist, songs=playlist_songs)
+    return render_template('playlist_details.html', playlist=playlist, songs=playlist_songs, username=username)
 
 @app.route('/playlists')
 def playlists():
@@ -231,6 +228,36 @@ def playlists():
     }))
 
     return render_template('playlists.html', playlists=user_playlists)
+
+@app.route('/add_playlist', methods=['GET', 'POST'])
+def add_playlist():
+    user_id = session.get('user').get('id')
+    username = session.get('user').get('name')
+
+    if not user_id:
+        return redirect('/login')
+
+    error = None
+
+    if request.method == 'POST':
+        playlist_name = request.form.get('playlist_name')
+
+        if not playlist_name:
+            error = "Playlist name is required."
+
+        elif playlist_collection.find_one({"name": playlist_name}):
+            error = "A playlist with this name already exists. Please choose another name."
+        else:
+            playlist_id = str(uuid.uuid1())
+
+            new_playlist = Playlist(playlist_id, playlist_name, user_id, [user_id])
+
+            playlist_collection.insert_one(new_playlist.to_dict())
+
+            return redirect(url_for('playlists'))
+
+    return render_template('add_playlist.html', error=error, username=username)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

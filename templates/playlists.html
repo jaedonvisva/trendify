@@ -2,6 +2,99 @@
 <html>
 <head>
     <title>Your Playlists</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        body {
+            font-family: "Poppins", sans-serif;
+            background-color: #191414;
+            color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: #1DB954;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        li {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        a {
+            color: #1DB954;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        a:hover {
+            color: rgb(237, 237, 237);
+        }
+
+        .owner-badge {
+            color: #1DB954;
+            font-size: 0.9rem;
+            background-color: rgba(29, 185, 84, 0.2);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+        }
+
+        .back-link {
+            margin-top: 2rem;
+            font-size: 1rem;
+            color: #1DB954;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #1DB954;
+            color: #191414;
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 1rem;
+            }
+
+            ul {
+                width: 100%;
+            }
+
+            li {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .back-link {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 </head>
 <body>
     <h1>Your Playlists</h1>
@@ -13,12 +106,12 @@
                     {{ playlist['name'] }}
                 </a>
                 {% if session['user']['id'] == playlist['owner_id'] %}
-                    <span>(Owner)</span>
+                    <span class="owner-badge">(Owner)</span>
                 {% endif %}
             </li>
         {% endfor %}
     </ul>
 
-    <a href="/">Back to Home</a>
+    <a href="/" class="back-link">Back to Home</a>
 </body>
 </html>

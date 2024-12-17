@@ -143,6 +143,14 @@ li {
 <body>
     <h1>Welcome, {{username}}</h1>
     <p>Vote on songs to add to your group playlists!</p>
+    <div class="action-buttons">
+        <form method="GET" action="/playlists">
+            <button type="submit">View Playlists</button>
+        </form>
+        <form method="GET" action="/add_playlist">
+            <button type="submit">Create New Playlist</button>
+        </form>
+    </div>
     <form method="POST" action="/">
         <input type="text" name="query" placeholder="Enter song name" required>
         <button type="submit">Search</button>
