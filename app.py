@@ -149,7 +149,6 @@ def callback():
     }
 
     if not users_collection.find_one({"spotify_id":user_profile.get("id")}):
-        print("added")
         users_collection.insert_one(User(session['user']['id'], session['user']['url'], session['user']['name']).to_dict())
     
     return redirect(url_for('index'))
@@ -188,9 +187,11 @@ def add():
 
     if not song_collection.find_one({"playlist_id": song_document['playlist_id'], "track_id": song_document['track_id']}):
         song_collection.insert_one(song_document)
-        return f"Added '{song_data['name']}' to playlist {playlist_id} by user {user_id}"
+        redirect_url = f'/playlist/{playlist_id}'
+        return redirect(redirect_url)
     else:
-        return  f"Already added {song_data['name']} to the playlist {song_document['playlist_id']}"
+        return redirect(f'/playlist/{playlist_id}?message=Song already in the playlist')
+
 
 
 @app.route('/logout')
@@ -201,6 +202,7 @@ def logout():
 @app.route('/playlist/<playlist_id>')
 def playlist_details(playlist_id):
     user_id = session['user']['id']
+    message = request.args.get('message')
     if not user_id:
         return redirect('/login')
 
@@ -212,7 +214,7 @@ def playlist_details(playlist_id):
     playlist_songs = list(song_collection.find({"playlist_id": playlist_id}))
     username = users_collection.find_one({"spotify_id": user_id})["name"]
 
-    return render_template('playlist_details.html', playlist=playlist, songs=playlist_songs, username=username)
+    return render_template('playlist_details.html', playlist=playlist, songs=playlist_songs, username=username, message=message)
 
 @app.route('/playlists')
 def playlists():

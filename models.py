@@ -50,13 +50,15 @@ class Playlist:
         }
 
 class Vote:
-    def __init__(self, spotify_id, track_id):
+    def __init__(self, spotify_id, track_id, playlist_id):
         self.user_id = spotify_id
         self.song_id = track_id
+        self.playlist_id = playlist_id
 
     def to_dict(self):
         return{
             "user_id": self.user_id,
-            "song_id": self.song_id
+            "song_id": self.song_id,
+            "playlist_id": self.playlist_id
         }
     

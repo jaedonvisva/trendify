@@ -6,6 +6,7 @@
     <title>Trendify</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        
         body {
             font-family: "Poppins", sans-serif;
             background-color: #191414;
@@ -18,43 +19,44 @@
             flex-direction: column;
             min-height: 100vh;
         }
-
+    
         img {
-    width: 100%; /* Ensures the image takes up the available width of its container */
-    max-width: 150px; /* Sets a maximum width to keep the image small */
-    height: auto; /* Maintains the aspect ratio of the image */
-    border-radius: 8px; /* Adds rounded corners to the image */
-    margin-bottom: 1rem; /* Adds spacing below the image */
-}
-li {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 1rem;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 200px; /* Ensures a compact and neat layout */
-    margin: auto; /* Centers the box within the grid */
-}
-
-
+            width: 100%;
+            max-width: 250px;
+            height: auto;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+    
+        li {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            max-width: 35vw;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+    
         h1 {
             font-size: 2.5rem;
             margin-bottom: 1rem;
             color: #1DB954;
         }
-
+    
         body p {
             color: #1DB954;
         }
-
+    
         form {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 2rem;
         }
-
+    
         input[type="text"] {
             padding: 0.8rem;
             font-size: 1rem;
@@ -65,80 +67,131 @@ li {
             color: black;
             outline: none;
         }
-
+    
         input[type="text"]::placeholder {
             color: #888;
         }
-
+    
         button {
-            padding: 0.8rem 1.5rem;
-            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
             background-color: #1DB954;
             color: #191414;
             border: none;
             border-radius: 25px;
             cursor: pointer;
             transition: background-color 0.3s, color 0.3s;
+            width: 100%;
+            box-sizing: border-box;
         }
-
+    
         button:hover {
             background-color: rgb(237, 237, 237);
             color: #1DB954;
         }
-
+    
+        select {
+            background-color: #1DB954;
+            color: #191414;
+            border: none;
+            border-radius: 25px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-family: "Poppins", sans-serif;
+            outline: none;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    
+        select:focus {
+            background-color: #191414;
+            color: #1DB954;
+            border: 1px solid #1DB954;
+        }
+    
+        option {
+            background-color: #191414;
+            color: #1DB954;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+            font-family: "Poppins", sans-serif;
+        }
+    
+        option:hover {
+            background-color: #1DB954;
+            color: #191414;
+        }
+    
         p {
             font-size: 1rem;
             margin-top: -1rem;
         }
-
+    
         ul {
+            display: flex;
             list-style: none;
             padding: 0;
+            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            width: 100vw;
         }
-
+    
         li {
-            margin-bottom: 1rem;
+            margin: 1rem;
             padding: 1rem;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
+            justify-content: center;
+            width: 100%;
+            
         }
-
+    
         a {
             color: #ffffff;
             text-decoration: none;
             font-weight: bold;
             transition: color 0.3s;
         }
-
+    
         a:hover {
             color: #fff;
         }
-
+    
         h2 {
             margin-bottom: 1rem;
             font-size: 1.8rem;
         }
-
-        @media (max-width: 480px) {
+    
+        @media (max-width: 720px) {
             body {
                 padding: 1rem;
             }
-
+    
             input[type="text"] {
                 width: 100%;
             }
-
+    
             button {
                 width: 100%;
                 text-align: center;
             }
-
+    
             form {
                 flex-direction: column;
                 gap: 1rem;
             }
+    
+            ul {
+                flex-direction: column;
+            }
         }
     </style>
+    
 </head>
 <body>
     <h1>Welcome, {{username}}</h1>

@@ -90,12 +90,16 @@ li {
         }
 
         ul {
+            display: flex;
             list-style: none;
             padding: 0;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: center ;
         }
 
         li {
-            margin-bottom: 1rem;
+            margin: 1rem;
             padding: 1rem;
             background-color: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
@@ -117,7 +121,7 @@ li {
             font-size: 1.8rem;
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 720px) {
             body {
                 padding: 1rem;
             }
@@ -135,6 +139,9 @@ li {
                 flex-direction: column;
                 gap: 1rem;
             }
+            ul{
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -143,6 +150,11 @@ li {
     <p>Owned by: {{ username }}</p>
     
     <h2>Songs</h2>
+    {% if message %}
+<div style="color: red;">
+    {{ message }}
+</div>
+{% endif %}
     <ul>
         {% for song in songs %}
             <li>
