@@ -260,7 +260,7 @@ def vote():
         )
         vote_document = {"user_id": user_id, "song_id": track_id, "playlist_id": playlist_id}
         votes_collection.insert_one(vote_document)
-        return redirect(url_for('/playlist/{playlist_id}'))
+        return redirect(f'/playlist/{playlist_id}')
     else:
         return redirect(f'/playlist/{playlist_id}?message=You already voted for this track')
 
