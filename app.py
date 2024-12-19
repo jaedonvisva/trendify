@@ -37,7 +37,9 @@ def index():
     query = None
 
     access_token = session.get('access_token')
-    if not access_token:
+    refresh_token = session.get('refresh_token')
+    
+    if (not access_token) or (not refresh_token):
         return redirect(url_for('login_page'))
     
     user = session.get("user")
@@ -184,9 +186,15 @@ def add():
         "playlist_id": playlist_id,
         "votes": [user_id]
     }
+    vote_document={
+        "song_id": song_data['id'],
+        "playlist_id": playlist_id,
+        "user_id": user_id
+    }
 
     if not song_collection.find_one({"playlist_id": song_document['playlist_id'], "track_id": song_document['track_id']}):
         song_collection.insert_one(song_document)
+        votes_collection.insert_one(vote_document)
         redirect_url = f'/playlist/{playlist_id}'
         return redirect(redirect_url)
     else:
@@ -264,7 +272,24 @@ def vote():
     else:
         return redirect(f'/playlist/{playlist_id}?message=You already voted for this track')
 
+@app.route('/remove_vote', methods=["GET", "POST"])
+def remove_vote():
+    user_id = session.get('user').get('id')
+    playlist_id = request.form.get('playlist_id')
+    track_id = request.form.get('song_id')
+
+    votes_collection.delete_one({"track_id": track_id, "playist_id": playlist_id, "user_id":user_id})
+    song_collection.update_one(
+            {"track_id": track_id, "playlist_id": playlist_id},
+            {"$pull": {"votes": user_id}})
     
+    if len(song_collection.find_one({"track_id":track_id, "playlist_id":playlist_id}).get("votes")) == 0:
+        song_collection.delete_one({"track_id":track_id, "playlist_id":playlist_id})
+        votes_collection.delete_one({"song_id":track_id, "playlist_id":playlist_id})
+    
+
+    redirect_url = f'/playlist/{playlist_id}'
+    return redirect(redirect_url)
 
 @app.route('/add_playlist', methods=['GET', 'POST'])
 def add_playlist():
