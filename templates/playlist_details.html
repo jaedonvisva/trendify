@@ -159,7 +159,17 @@ li {
         {% for song in songs %}
             <li>
                 <img src="{{ song['album_cover'] }}" alt="{{ song['name'] }} Cover" width="50" height="50">
-                <a href="{{ song['url'] }}" target="_blank">{{ song['name'] }}</a> by {{ song['artist'] }}
+                <a href="{{ song['url'] }}" target="_blank">{{ song['name'] }}</a> by {{ song['artist'] }} <br> Votes: {{song.votes_count}}
+                {% if user_id in song.votes %}
+                <br><br>
+    <p>You have already voted for this song.</p>
+{% else %}
+    <form action="/vote" method="POST">
+        <input type="hidden" name="song_id" value="{{ song.track_id }}">
+        <input type="hidden" name="playlist_id" value="{{ playlist.playlist_id }}">
+        <button type="submit">Vote</button>
+    </form>
+{% endif %}
             </li>
         {% endfor %}
     </ul>

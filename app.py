@@ -182,7 +182,7 @@ def add():
         "spotify_url": song_data['external_urls']['spotify'],
         "added_by": user_id,
         "playlist_id": playlist_id,
-        "votes": []
+        "votes": [user_id]
     }
 
     if not song_collection.find_one({"playlist_id": song_document['playlist_id'], "track_id": song_document['track_id']}):
@@ -209,12 +209,26 @@ def playlist_details(playlist_id):
     playlist = playlist_collection.find_one({"playlist_id": playlist_id})
 
     if not playlist or (user_id not in playlist['members'] and user_id != playlist['created_by']):
-        return "You do not have access to this playlist", 403
+        return f"You do not have access to this playlist. These are the members: {playlist['members']} This is the creator: {playlist['created_by']} This is who you are: {user_id}", 403
 
+    # Retrieve all songs in the playlist
     playlist_songs = list(song_collection.find({"playlist_id": playlist_id}))
+
+    # Add the votes count for each song
+    for song in playlist_songs:
+        song['votes_count'] = len(song.get('votes', []))
+
     username = users_collection.find_one({"spotify_id": user_id})["name"]
 
-    return render_template('playlist_details.html', playlist=playlist, songs=playlist_songs, username=username, message=message)
+    return render_template(
+        'playlist_details.html',
+        playlist=playlist,
+        songs=playlist_songs,
+        username=username,
+        message=message,
+        user_id=user_id
+    )
+
 
 @app.route('/playlists')
 def playlists():
@@ -230,6 +244,27 @@ def playlists():
     }))
 
     return render_template('playlists.html', playlists=user_playlists)
+
+@app.route('/vote', methods=['GET', 'POST'])
+def vote():
+    user_id = session.get('user').get('id')
+    playlist_id = request.form.get('playlist_id')
+    track_id = request.form.get('song_id')
+
+    song = song_collection.find_one({"track_id": track_id, "playlist_id": playlist_id})
+
+    if user_id not in song.get('votes', []):
+        song_collection.update_one(
+            {"track_id": track_id, "playlist_id": playlist_id},
+            {"$push": {"votes": user_id}}
+        )
+        vote_document = {"user_id": user_id, "song_id": track_id, "playlist_id": playlist_id}
+        votes_collection.insert_one(vote_document)
+        return redirect(url_for('/playlist/{playlist_id}'))
+    else:
+        return redirect(f'/playlist/{playlist_id}?message=You already voted for this track')
+
+    
 
 @app.route('/add_playlist', methods=['GET', 'POST'])
 def add_playlist():

@@ -1,5 +1,5 @@
 class Song:
-    def __init__(self, track_id, name, artist, album_cover, spotify_url, added_by, playlist_id, votes):
+    def __init__(self, track_id, name, artist, album_cover, spotify_url, added_by, playlist_id):
         self.track_id = track_id
         self.name = name
         self.artist = artist
