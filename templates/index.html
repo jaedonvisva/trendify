@@ -5,234 +5,293 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trendify</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
         
-        body {
-            font-family: "Poppins", sans-serif;
-            background-color: #191414;
-            color: white;
+        :root {
+            --primary-color: #1DB954;
+            --background-color: #121212;
+            --surface-color: rgba(255, 255, 255, 0.1);
+            --text-color: #FFFFFF;
+            --secondary-color: #535353;
+            --error-color: #f54242;
+            --hover-color: #1ed760;
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
             min-height: 100vh;
         }
-    
-        img {
-            width: 100%;
-            max-width: 250px;
-            height: auto;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-        }
-    
-        li {
-            background-color: rgba(255, 255, 255, 0.1);
-            padding: 1rem;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            max-width: 35vw;
+
+        .container {
+            max-width: 1200px;
             margin: 0 auto;
-            box-sizing: border-box;
+            padding: 2rem;
         }
-    
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
         h1 {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #1DB954;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
         }
-    
-        body p {
-            color: #1DB954;
+
+        .subtitle {
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            opacity: 0.9;
         }
-    
-        form {
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+
+        .search-form {
             display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
         }
-    
+
         input[type="text"] {
-            padding: 0.8rem;
+            flex: 1;
+            padding: 1rem 1.5rem;
             font-size: 1rem;
             border: none;
-            border-radius: 25px;
-            width: 300px;
-            background-color: white;
-            color: black;
+            border-radius: 30px;
+            background-color: var(--surface-color);
+            color: var(--text-color);
             outline: none;
+            transition: background-color 0.3s ease;
         }
-    
+
+        input[type="text"]:focus {
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
         input[type="text"]::placeholder {
-            color: #888;
+            color: rgba(255, 255, 255, 0.5);
         }
-    
+
         button {
-            padding: 0.5rem 1rem;
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            background-color: #1DB954;
-            color: #191414;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
-            width: 100%;
-            box-sizing: border-box;
-        }
-    
-        button:hover {
-            background-color: rgb(237, 237, 237);
-            color: #1DB954;
-        }
-    
-        select {
-            background-color: #1DB954;
-            color: #191414;
-            border: none;
-            border-radius: 25px;
-            padding: 0.5rem 1rem;
-            font-size: 0.9rem;
-            font-family: "Poppins", sans-serif;
-            outline: none;
-            cursor: pointer;
-            margin-top: 0.5rem;
-            width: 100%;
-            box-sizing: border-box;
-        }
-    
-        select:focus {
-            background-color: #191414;
-            color: #1DB954;
-            border: 1px solid #1DB954;
-        }
-    
-        option {
-            background-color: #191414;
-            color: #1DB954;
-            padding: 0.5rem;
-            font-size: 0.9rem;
-            font-family: "Poppins", sans-serif;
-        }
-    
-        option:hover {
-            background-color: #1DB954;
-            color: #191414;
-        }
-    
-        p {
+            padding: 1rem 2rem;
             font-size: 1rem;
-            margin-top: -1rem;
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            white-space: nowrap;
         }
-    
-        ul {
-            display: flex;
+
+        button:hover {
+            background-color: var(--hover-color);
+            transform: translateY(-2px);
+        }
+
+        select {
+            width: 100%;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            background-color: var(--surface-color);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            cursor: pointer;
+            appearance: none;
+            transition: all 0.3s ease;
+            margin-bottom: 1rem;
+        }
+
+        select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .search-results {
+            margin-top: 2rem;
+        }
+
+        .search-results h2 {
+            color: var(--text-color);
+            font-size: 1.8rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .songs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
             list-style: none;
             padding: 0;
-            flex-direction: column;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            width: 100vw;
         }
-    
-        li {
-            margin: 1rem;
-            padding: 1rem;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-            justify-content: center;
+
+        .song-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+            border-radius: 16px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .song-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .song-image {
             width: 100%;
-            
+            aspect-ratio: 1;
+            object-fit: cover;
         }
-    
-        a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s;
+
+        .song-content {
+            padding: 1.5rem;
         }
-    
-        a:hover {
-            color: #fff;
+
+        .song-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
         }
-    
-        h2 {
+
+        .song-artist {
+            color: rgba(255, 255, 255, 0.7);
             margin-bottom: 1rem;
-            font-size: 1.8rem;
         }
-    
-        @media (max-width: 720px) {
-            body {
+
+        .spotify-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            margin-bottom: 1rem;
+            transition: color 0.3s ease;
+        }
+
+        .spotify-link:hover {
+            color: var(--hover-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
                 padding: 1rem;
             }
-    
-            input[type="text"] {
-                width: 100%;
-            }
-    
-            button {
-                width: 100%;
-                text-align: center;
-            }
-    
-            form {
+
+            .search-form {
                 flex-direction: column;
-                gap: 1rem;
             }
-    
-            ul {
-                flex-direction: column;
+
+            .songs-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
             }
         }
+
+        .logout-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: #ff5555;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .logout-btn:hover {
+            background-color: #ff3333;
+        }
     </style>
-    
 </head>
 <body>
-    <h1>Welcome, {{username}}</h1>
-    <p>Vote on songs to add to your group playlists!</p>
-    <div class="action-buttons">
-        <form method="GET" action="/playlists">
-            <button type="submit">View Playlists</button>
-        </form>
-        <form method="GET" action="/add_playlist">
-            <button type="submit">Create New Playlist</button>
-        </form>
-    </div>
-    <form method="POST" action="/">
-        <input type="text" name="query" placeholder="Enter song name" required>
-        <button type="submit">Search</button>
-    </form>
-    {% if error %}
-        <p style="color: #f54242;">Error: {{ error }}</p>
-    {% endif %}
-    {% if songs %}
-        <h2>Search Results for "{{ query }}":</h2>
-        <ul>
-            {% for song in songs %}
-    <li>
-        <img src="{{ song.cover }}" alt="Album cover for {{ song.name }}">
-        <strong>{{ song.name }}</strong> by {{ song.artist }} <br>
-        <a href="{{ song.url }}" target="_blank">Listen on Spotify</a> <br>
-        <form action="{{ url_for('add') }}" method="POST">
-            <input type="hidden" name="song_id" value="{{ song.id }}">
-            <select name="playlist_id" required>
-                <option value="" disabled selected>Select Playlist</option>
-                {% for playlist in playlists %}
-                    <option value="{{ playlist.playlist_id }}">{{ playlist.name }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit">Add to Playlist</button>
-        </form>
-    </li>
-{% endfor %}
+    <div class="container">
+        <a href="/logout" class="logout-btn">Logout</a>
+        <header class="header">
+            <h1>Welcome, {{username}}</h1>
+            <p class="subtitle">Vote on songs to add to your group playlists!</p>
+        </header>
 
-        </ul>
-    {% endif %}
+        <div class="action-buttons">
+            <form method="GET" action="/playlists">
+                <button type="submit">View Playlists</button>
+            </form>
+            <form method="GET" action="/add_playlist">
+                <button type="submit">Create New Playlist</button>
+            </form>
+        </div>
+
+        <form class="search-form" method="POST" action="/">
+            <input type="text" name="query" placeholder="Search for songs..." required>
+            <button type="submit">Search</button>
+        </form>
+
+        {% if error %}
+            <p class="error-message">Error: {{ error }}</p>
+        {% endif %}
+
+        {% if songs %}
+            <div class="search-results">
+                <h2>Search Results for "{{ query }}"</h2>
+                <ul class="songs-grid">
+                    {% for song in songs %}
+                        <li class="song-card">
+                            <img class="song-image" src="{{ song.cover }}" alt="Album cover for {{ song.name }}">
+                            <div class="song-content">
+                                <div class="song-title">{{ song.name }}</div>
+                                <div class="song-artist">{{ song.artist }}</div>
+                                <a href="{{ song.url }}" class="spotify-link" target="_blank">Listen on Spotify</a>
+                                <form action="{{ url_for('add') }}" method="POST">
+                                    <input type="hidden" name="song_id" value="{{ song.id }}">
+                                    <select name="playlist_id" required>
+                                        <option value="" disabled selected>Select Playlist</option>
+                                        {% for playlist in playlists %}
+                                            <option value="{{ playlist.playlist_id }}">{{ playlist.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit">Add to Playlist</button>
+                                </form>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
 </body>
 </html>

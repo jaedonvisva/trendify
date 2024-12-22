@@ -37,15 +37,18 @@ def index():
     query = None
 
     access_token = session.get('access_token')
-    refresh_token = session.get('refresh_token')
-    
-    if (not access_token) or (not refresh_token):
+
+    user = session.get("user")
+
+    if not user:
         return redirect(url_for('login_page'))
     
-    user = session.get("user")
     username = user["name"]
     id = user['id']
 
+    if not access_token:
+        return redirect(url_for('login_page'))
+    
     if request.method == 'POST':
         query = request.form.get('query')
         
@@ -81,8 +84,10 @@ def index():
         ]
     }))
                 return render_template("index.html", username=username, songs=songs, playlists=playlists, query=query)
+            elif response.status_code == 401:
+                return redirect(url_for('login_page'))
             else:
-                error = "Failed to fetch search results. Please try again."
+                error = response.status_code
     playlists = list(playlist_collection.find({
         "$or": [
             {"created_by": id},
@@ -200,6 +205,23 @@ def add():
     else:
         return redirect(f'/playlist/{playlist_id}?message=Song already in the playlist')
 
+@app.route('/add_member', methods=["GET", "POST"])
+def add_member():
+    user_id = session.get('user').get('id')
+    member_name = request.form.get('member_name')
+    playlist_id = request.form.get("playlist_id")
+
+    playlist = playlist_collection.find_one({"playlist_id": playlist_id})
+    member_id = users_collection.find_one({"name": member_name})
+
+    if user_id in playlist.get('members'):
+        return redirect(f'/playlist/{playlist_id}?message=This person is already in the playlist.')
+    else:
+        playlist_collection.update_one(
+            {'playlist_id': playlist_id},
+            {"$push": {"members": member_id}}
+        )
+        return redirect(f'/playlist/{playlist_id}')
 
 
 @app.route('/logout')
@@ -225,6 +247,16 @@ def playlist_details(playlist_id):
     # Add the votes count for each song
     for song in playlist_songs:
         song['votes_count'] = len(song.get('votes', []))
+    
+    member_ids = playlist.get('members', [])
+    members = []
+    for member_id in member_ids:
+        user = users_collection.find_one({"spotify_id": member_id})
+        if user:
+            members.append({"id": member_id, "name": user["name"]})
+        else:
+            members.append({"id": member_id, "name": "Unknown User"})
+
 
     username = users_collection.find_one({"spotify_id": user_id})["name"]
 
@@ -234,7 +266,8 @@ def playlist_details(playlist_id):
         songs=playlist_songs,
         username=username,
         message=message,
-        user_id=user_id
+        user_id=user_id,
+        members = members
     )
 
 

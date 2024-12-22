@@ -1,183 +1,317 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ playlist['name'] }}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
-        body {
-            font-family: "Poppins", sans-serif;
-            background-color: #191414;
-            color: white;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            min-height: 100vh;
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        
+        :root {
+            --primary-color: #1DB954;
+            --background-color: #121212;
+            --text-color: #FFFFFF;
+            --secondary-color: #535353;
+            --hover-color: #1ed760;
         }
 
-        img {
-    width: 100%; /* Ensures the image takes up the available width of its container */
-    max-width: 150px; /* Sets a maximum width to keep the image small */
-    height: auto; /* Maintains the aspect ratio of the image */
-    border-radius: 8px; /* Adds rounded corners to the image */
-    margin-bottom: 1rem; /* Adds spacing below the image */
-}
-li {
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 1rem;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    max-width: 200px; /* Ensures a compact and neat layout */
-    margin: auto; /* Centers the box within the grid */
-}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1, h2 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
 
         h1 {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
-            color: #1DB954;
-        }
-
-        body p {
-            color: #1DB954;
-        }
-
-        form {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-        }
-
-        input[type="text"] {
-            padding: 0.8rem;
-            font-size: 1rem;
-            border: none;
-            border-radius: 25px;
-            width: 300px;
-            background-color: white;
-            color: black;
-            outline: none;
-        }
-
-        input[type="text"]::placeholder {
-            color: #888;
-        }
-
-        button {
-            padding: 0.8rem 1.5rem;
-            font-size: 1rem;
-            background-color: #1DB954;
-            color: #191414;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        button:hover {
-            background-color: rgb(237, 237, 237);
-            color: #1DB954;
-        }
-
-        p {
-            font-size: 1rem;
-            margin-top: -1rem;
-        }
-
-        ul {
-            display: flex;
-            list-style: none;
-            padding: 0;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: center ;
-        }
-
-        li {
-            margin: 1rem;
-            padding: 1rem;
-            background-color: rgba(255, 255, 255, 0.1);
-            border-radius: 4px;
-        }
-
-        a {
-            color: #ffffff;
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s;
-        }
-
-        a:hover {
-            color: #fff;
+            text-align: center;
+            font-weight: 600;
         }
 
         h2 {
-            margin-bottom: 1rem;
             font-size: 1.8rem;
+            margin-top: 2rem;
         }
 
-        @media (max-width: 720px) {
+        .playlist-info {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .members-section {
+            margin-bottom: 2rem;
+        }
+
+        .members-list {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .members-list li {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .add-member-btn, .submit-btn, .home-btn {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 1rem;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .add-member-btn:hover, .submit-btn:hover, .home-btn:hover {
+            background-color: var(--hover-color);
+            transform: scale(1.05);
+        }
+
+        #addMemberForm {
+            margin-top: 1rem;
+        }
+
+        #addMemberForm input[type="text"] {
+            padding: 0.8rem;
+            border-radius: 25px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-color);
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 1rem;
+        }
+
+        .songs-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .song-item {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.1));
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .song-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .song-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .song-info {
+            padding: 1rem;
+        }
+
+        .song-title a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .song-title a:hover {
+            color: var(--primary-color);
+        }
+
+        .song-artist {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+            margin-top: 0.5rem;
+        }
+
+        .vote-count {
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-top: 0.5rem;
+        }
+
+        .vote-btn {
+            background-color: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            margin-top: 0.5rem;
+        }
+
+        .vote-btn:hover {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+        }
+
+        .back-link {
+            margin-top: 2rem;
+            font-size: 1rem;
+            color: var(--background-color);
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-color);
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .back-link:hover {
+            background-color: var(--hover-color);
+            transform: scale(1.05);
+        }
+
+        .no-songs-message {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+
+        @media (max-width: 768px) {
             body {
                 padding: 1rem;
             }
 
-            input[type="text"] {
-                width: 100%;
+            .songs-list {
+                grid-template-columns: 1fr;
             }
 
-            button {
-                width: 100%;
-                text-align: center;
+            h1 {
+                font-size: 2rem;
             }
+        }
 
-            form {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            ul{
-                flex-direction: column;
-            }
+        .logout-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background-color: #ff5555;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+        }
+        .logout-btn:hover {
+            background-color: #ff3333;
         }
     </style>
 </head>
 <body>
-    <h1>{{ playlist['name'] }}</h1>
-    <p>Owned by: {{ username }}</p>
-    
-    <h2>Songs</h2>
-    {% if message %}
-<div style="color: red;">
-    {{ message }}
-</div>
-{% endif %}
-    <ul>
-        {% for song in songs %}
-            <li>
-                <img src="{{ song['album_cover'] }}" alt="{{ song['name'] }} Cover" width="50" height="50">
-                <a href="{{ song['spotify_url'] }}" target="_blank">{{ song['name'] }}</a> by {{ song['artist'] }} <br> Votes: {{song.votes_count}}
-                {% if user_id in song.votes %}
-                <br><br>
-                <form action="/remove_vote" method="POST">
-                    <input type="hidden" name="song_id" value="{{ song.track_id }}">
-                    <input type="hidden" name="playlist_id" value="{{ playlist.playlist_id }}">
-                    <button type="submit">Remove Vote</button>
-                </form>
-{% else %}
-    <form action="/vote" method="POST">
-        <input type="hidden" name="song_id" value="{{ song.track_id }}">
-        <input type="hidden" name="playlist_id" value="{{ playlist.playlist_id }}">
-        <button type="submit">Vote</button>
-    </form>
-{% endif %}
-            </li>
-        {% endfor %}
-    </ul>
+    <div class="container">
+        <a href="/logout" class="logout-btn">Logout</a>
+        <div class="playlist-info">
+            <h1>{{ playlist['name'] }}</h1>
+            <p>Owned by: {{ username }}</p>
+        </div>
 
-    <a href="/playlists">Back to Playlists</a>
+        <div class="members-section">
+            <h2>Members</h2>
+            <ul class="members-list">
+                {% for member in members %}
+                    <li>{{ member.name }}</li>
+                {% endfor %}
+            </ul>
+            <button id="showFormButton" class="add-member-btn">Add Member</button>
+            <form id="addMemberForm" action="/add_member" method="POST" style="display: none;">
+                <input type="hidden" name="playlist_id" value="{{ playlist.playlist_id }}">
+                <input type="text" name="member_name" placeholder="Enter member name" required>
+                <button type="submit" class="submit-btn">Submit</button>
+            </form>
+        </div>
+
+        <h2>Songs</h2>
+        {% if songs %}
+            <ul class="songs-list">
+                {% for song in songs %}
+                    <li class="song-item">
+                        <img src="{{ song['album_cover'] }}" alt="{{ song['name'] }} Cover">
+                        <div class="song-info">
+                            <div class="song-title">
+                                <a href="{{ song['spotify_url'] }}" target="_blank">{{ song['name'] }}</a>
+                            </div>
+                            <div class="song-artist">{{ song['artist'] }}</div>
+                            <div class="vote-count">Votes: {{ song.votes_count }}</div>
+                            {% if user_id in song.votes %}
+                                <form action="/remove_vote" method="POST">
+                                    <input type="hidden" name="song_id" value="{{ song.track_id }}">
+                                    <input type="hidden" name="playlist_id" value="{{ playlist.playlist_id }}">
+                                    <button type="submit" class="vote-btn">Remove Vote</button>
+                                </form>
+                            {% else %}
+                                <form action="/vote" method="POST">
+                                    <input type="hidden" name="song_id" value="{{ song.track_id }}">
+                                    <input type="hidden" name="playlist_id" value="{{ playlist.playlist_id }}">
+                                    <button type="submit" class="vote-btn">Vote</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <div class="no-songs-message">
+                <p>There are no songs in this playlist yet. Go add some songs!</p>
+                <br>
+                <a href="/" class="home-btn">Add some songs!</a>
+            </div>
+        {% endif %}
+
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="/" class="back-link">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('showFormButton').addEventListener('click', function() {
+            const form = document.getElementById('addMemberForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+    </script>
 </body>
 </html>
