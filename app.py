@@ -61,7 +61,7 @@ def index():
             params = {
                 "q": query,
                 "type": "track",
-                "limit": 10
+                "limit": 20
             }
             response = requests.get(SPOTIFY_SEARCH_URL, headers=headers, params=params)
 
@@ -215,7 +215,7 @@ def add_member():
     member_id = users_collection.find_one({"name": member_name})
 
     if user_id in playlist.get('members'):
-        return redirect(f'/playlist/{playlist_id}?message=This person is already in the playlist.')
+        return redirect(f'/playlist/{playlist_id}')
     else:
         playlist_collection.update_one(
             {'playlist_id': playlist_id},
@@ -241,10 +241,8 @@ def playlist_details(playlist_id):
     if not playlist or (user_id not in playlist['members'] and user_id != playlist['created_by']):
         return f"You do not have access to this playlist. These are the members: {playlist['members']} This is the creator: {playlist['created_by']} This is who you are: {user_id}", 403
 
-    # Retrieve all songs in the playlist
     playlist_songs = list(song_collection.find({"playlist_id": playlist_id}))
 
-    # Add the votes count for each song
     for song in playlist_songs:
         song['votes_count'] = len(song.get('votes', []))
     
