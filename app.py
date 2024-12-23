@@ -210,17 +210,18 @@ def add_member():
     user_id = session.get('user').get('id')
     member_name = request.form.get('member_name')
     playlist_id = request.form.get("playlist_id")
-
     playlist = playlist_collection.find_one({"playlist_id": playlist_id})
-    member_id = users_collection.find_one({"name": member_name})
+    member = users_collection.find_one({"name": member_name})
 
-    if user_id in playlist.get('members'):
+    if member.get('spotify_id') in playlist.get('members'):
+        print("alr in")
         return redirect(f'/playlist/{playlist_id}')
     else:
         playlist_collection.update_one(
             {'playlist_id': playlist_id},
-            {"$push": {"members": member_id}}
+            {"$push": {"members": member.get('spotify_id')}}
         )
+        print("updated")
         return redirect(f'/playlist/{playlist_id}')
 
 
@@ -256,16 +257,16 @@ def playlist_details(playlist_id):
             members.append({"id": member_id, "name": "Unknown User"})
 
 
-    username = users_collection.find_one({"spotify_id": user_id})["name"]
+    createdby = users_collection.find_one({"spotify_id": playlist['created_by']})["name"]
 
     return render_template(
         'playlist_details.html',
         playlist=playlist,
         songs=playlist_songs,
-        username=username,
         message=message,
         user_id=user_id,
-        members = members
+        members = members,
+        createdby=createdby
     )
 
 
